@@ -31,11 +31,7 @@ void APlayerCharacterController::PlayerTick(float DeltaTime)
 			return;
 		}
 
-		UCharacterMovementComponent* MovementComponent = Character->GetCharacterMovement();
-		float Speed = MovementComponent->MaxWalkSpeed;
-		FVector Direction = (TargetLocation - Character->GetActorLocation()).GetSafeNormal();
-		
-		MovementComponent->MoveSmooth(Direction * Speed, DeltaTime);
+		MoveAndRotation(DeltaTime);
 	}
 
 	if (bIsMousePressed)
@@ -51,6 +47,21 @@ void APlayerCharacterController::PlayerTick(float DeltaTime)
 			}
 		}
 	}
+}
+
+void APlayerCharacterController::MoveAndRotation(float DeltaTime)
+{
+	ACharacter* Character = GetCharacter();
+
+	//Smooth Move
+	UCharacterMovementComponent* MovementComponent = Character->GetCharacterMovement();
+	float Speed = MovementComponent->MaxWalkSpeed;
+	FVector Direction = (TargetLocation - Character->GetActorLocation()).GetSafeNormal();
+	MovementComponent->MoveSmooth(Direction * Speed, DeltaTime);
+
+	//Smooth Rotation
+	SmoothRotator = FMath::RInterpTo(SmoothRotator, TargetRotator, DeltaTime, SmoothTargetViewRotationSpeed);
+	SetControlRotation(SmoothRotator);
 }
 
 void APlayerCharacterController::SetupInputComponent()
@@ -75,7 +86,7 @@ void APlayerCharacterController::SetTargetLocation(FVector InTargetLocation)
 {
 	TargetLocation = InTargetLocation;
 	bHasTargetLocation = true;
-	
-	float Distance = FVector::Dist(GetCharacter()->GetActorLocation(), TargetLocation);
-	UE_LOG(LogClass, Warning, TEXT("Distance: %f"), Distance);
+
+	TargetRotator = UKismetMathLibrary::FindLookAtRotation(GetCharacter()->GetActorLocation(), TargetLocation);
+	SmoothRotator = GetCharacter()->GetActorRotation();
 }

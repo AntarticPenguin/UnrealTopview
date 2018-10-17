@@ -23,10 +23,16 @@ private:
 	FVector TargetLocation;
 	bool bHasTargetLocation;
 	float DistTolerance;
+
+	FRotator TargetRotator;
+	FRotator SmoothRotator;
 	
 protected:
 	virtual void BeginPlay() override;
+
 	virtual void PlayerTick(float DeltaTime) override;
+	void MoveAndRotation(float DeltaTime);
+
 	virtual void SetupInputComponent() override;
 
 	void OnLeftMousePressed();
