@@ -24,7 +24,6 @@ private:
 	bool bHasTargetLocation;
 	float DistTolerance;
 
-	FRotator TargetRotator;
 	FRotator SmoothRotator;
 	
 protected:
@@ -37,6 +36,8 @@ protected:
 
 	void OnLeftMousePressed();
 	void OnLeftMouseReleased();
+	void OnRightMousePressed();
+	void OnRightMouseReleased();
 
 	void SetTargetLocation(FVector InTargetLocation);
 };

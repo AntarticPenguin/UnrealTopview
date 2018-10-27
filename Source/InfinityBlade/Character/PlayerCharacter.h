@@ -10,6 +10,15 @@ UCLASS()
 class INFINITYBLADE_API APlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
+private:
+	int AttackPoint;
+
+private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UDecalComponent* CursorToWorld;
+
+	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* AttackRangeBox;
 
 public:
 	// Sets default values for this character's properties
@@ -25,4 +34,10 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	TArray<AActor*> CheckAttackRange();
+	void SetAttackRange();
+	void ResetAttackRange();
+
+	int GetAttackPoint();
 };
