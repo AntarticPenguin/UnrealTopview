@@ -8,6 +8,7 @@
 #include "Materials/Material.h"
 #include "PlayerCharacterController.h"
 #include "Enemy/Enemy.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -16,29 +17,43 @@ APlayerCharacter::APlayerCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	//Set Cursor Decal
 	CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
 	CursorToWorld->SetupAttachment(RootComponent);
-	static ConstructorHelpers::FObjectFinder<UMaterial> DecalMaterialAsset(TEXT("Material'/Game/Materials/M_CursorDecal.M_CursorDecal'"));
-	if (DecalMaterialAsset.Succeeded())
 	{
-		CursorToWorld->SetDecalMaterial(DecalMaterialAsset.Object);
+		static ConstructorHelpers::FObjectFinder<UMaterial> DecalMaterialAsset(TEXT("Material'/Game/Materials/M_CursorDecal.M_CursorDecal'"));
+		if (DecalMaterialAsset.Succeeded())
+		{
+			CursorToWorld->SetDecalMaterial(DecalMaterialAsset.Object);
+		}
+		CursorToWorld->DecalSize = FVector(16.0f, 32.0f, 32.0f);
+		CursorToWorld->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f).Quaternion());
 	}
-	CursorToWorld->DecalSize = FVector(16.0f, 32.0f, 32.0f);
-	CursorToWorld->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
+
+	//Load RangeDecal Material
+	{
+		static ConstructorHelpers::FObjectFinder<UMaterial> DecalMaterialAsset(TEXT("Material'/Game/Materials/M_RangeDecal.M_RangeDecal'"));
+		if (DecalMaterialAsset.Succeeded())
+		{
+			RangeDecalMaterial = DecalMaterialAsset.Object;
+		}
+	}
 
 	//BoxCollision Settings
 	AttackRangeBox = CreateDefaultSubobject<UBoxComponent>("AttackRangeBox");
 	AttackRangeBox->bGenerateOverlapEvents = true;
+	AttackRangeBox->bReceivesDecals = false;
 	AttackRangeBox->SetupAttachment(RootComponent);
 	AttackRangeBox->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	AttackRangeBox->SetBoxExtent(FVector(64.0f, 64.0f, 64.0f));
+	AttackRangeBox->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f).Quaternion());
 }
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	AttackPoint = 10;
 }
 
@@ -55,6 +70,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 			Controller->GetHitResultUnderCursor(ECC_Visibility, true, Hit);
 			FVector CursorVector = Hit.ImpactNormal;
 			FRotator CursorRotator = CursorVector.Rotation();
+			UE_LOG(LogClass, Warning, TEXT("Rotation: %f %f %f"), CursorRotator.Roll, CursorRotator.Pitch, CursorRotator.Yaw);
 			CursorToWorld->SetWorldLocation(Hit.Location);
 			CursorToWorld->SetWorldRotation(CursorRotator);
 		}
@@ -69,8 +85,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 TArray<AActor*> APlayerCharacter::CheckAttackRange()
 {
-	//AttackRangeBox->OnComponentBeginOverlap.AddDynamic();
-	
 	SetAttackRange();
 	
 	TArray<AActor*> Enemies;
@@ -83,13 +97,18 @@ TArray<AActor*> APlayerCharacter::CheckAttackRange()
 
 void APlayerCharacter::SetAttackRange()
 {
-	FVector NewSize = FVector(80.0f, 64.0f, 64.0f);
-	float BoxSize = AttackRangeBox->GetScaledBoxExtent().X;
+	FVector NewSize = FVector(64.0f, 80.0f, 64.0f);
+	float BoxSize = AttackRangeBox->GetScaledBoxExtent().Y;
 	FVector NewLocation = GetActorLocation() + GetActorForwardVector() * BoxSize;
 
 	AttackRangeBox->SetBoxExtent(NewSize);
 	AttackRangeBox->SetWorldLocation(NewLocation);
-	UE_LOG(LogClass, Warning, TEXT("x: %f, y: %f, z: %f"), NewLocation.X, NewLocation.Y, NewLocation.Z);
+	
+	//Draw RangeDecal
+	NewSize.Z = 100.0f;
+	FRotator NewRotator = AttackRangeBox->GetComponentRotation();
+	auto RangeDecal = UGameplayStatics::SpawnDecalAtLocation(this, RangeDecalMaterial, NewSize, NewLocation, NewRotator, 0.0f);
+	RangeDecal->SetFadeOut(0.0f, 1.0f);
 }
 
 void APlayerCharacter::ResetAttackRange()

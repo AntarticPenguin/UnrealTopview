@@ -20,6 +20,12 @@ private:
 	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* AttackRangeBox;
 
+	//UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
+	//class UDecalComponent* RangeDecal;
+
+	UPROPERTY(EditAnywhere, Category = Materials, meta = (AllowPrivateAccess = "true"))
+	class UMaterialInterface* RangeDecalMaterial;
+
 public:
 	// Sets default values for this character's properties
 	APlayerCharacter();

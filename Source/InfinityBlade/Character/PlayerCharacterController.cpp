@@ -93,10 +93,7 @@ void APlayerCharacterController::OnRightMousePressed()
 	auto Character = Cast<APlayerCharacter>(GetCharacter());
 	if (Character)
 	{
-		/*
-			1. 공격범위 안에 적이 있는지 확인한다.
-			2. 들어온 적에게 데미지를 준다.
-		*/
+		//TODO: 적에게 데미지 주는 방식(현재는 컨트롤러에서)
 		TArray<AActor*> Enemies = Character->CheckAttackRange();
 		for (auto Enemy : Enemies)
 		{
