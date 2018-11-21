@@ -14,26 +14,13 @@ void APlayerCharacterController::BeginPlay()
 {
 	bShowMouseCursor = true;
 	bIsMousePressed = false;
-	bHasTargetLocation = false;
+	TargetPosition = nullptr;
 	DistTolerance = 110;
 }
 
 void APlayerCharacterController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
-
-	ACharacter* Character = GetCharacter();
-
-	if (bHasTargetLocation)
-	{
-		if(FVector::Dist(Character->GetActorLocation(), TargetLocation) < DistTolerance)
-		{
-			bHasTargetLocation = false;
-			return;
-		}
-
-		MoveAndRotation(DeltaTime);
-	}
 
 	if (bIsMousePressed)
 	{
@@ -42,27 +29,13 @@ void APlayerCharacterController::PlayerTick(float DeltaTime)
 
 		if (Hit.bBlockingHit)
 		{
-			if (Character)
+			if (GetCharacter())
 			{
-				SetTargetLocation(Hit.ImpactPoint);
+				SetTargetPosition(Hit.ImpactPoint);
+				Cast<APlayerCharacter>(GetCharacter())->ChangeState(EStateType::MOVE);
 			}
 		}
 	}
-}
-
-void APlayerCharacterController::MoveAndRotation(float DeltaTime)
-{
-	ACharacter* Character = GetCharacter();
-
-	//Smooth Move
-	UCharacterMovementComponent* MovementComponent = Character->GetCharacterMovement();
-	float Speed = MovementComponent->MaxWalkSpeed;
-	FVector Direction = (TargetLocation - Character->GetActorLocation()).GetSafeNormal();
-	MovementComponent->MoveSmooth(Direction * Speed, DeltaTime);
-
-	//Smooth Rotation
-	SmoothRotator = FMath::RInterpTo(SmoothRotator, Direction.Rotation(), DeltaTime, SmoothTargetViewRotationSpeed);
-	SetControlRotation(SmoothRotator);
 }
 
 void APlayerCharacterController::SetupInputComponent()
@@ -108,10 +81,39 @@ void APlayerCharacterController::OnRightMouseReleased()
 
 }
 
-void APlayerCharacterController::SetTargetLocation(FVector InTargetLocation)
+void APlayerCharacterController::MoveAndRotation(float DeltaTime)
 {
-	TargetLocation = InTargetLocation;
-	bHasTargetLocation = true;
+	ACharacter* Character = GetCharacter();
+
+	//Smooth Move
+	UCharacterMovementComponent* MovementComponent = Character->GetCharacterMovement();
+	float Speed = MovementComponent->MaxWalkSpeed;
+	FVector Direction = (*TargetPosition - Character->GetActorLocation()).GetSafeNormal();
+	MovementComponent->MoveSmooth(Direction * Speed, DeltaTime);
+
+	//Smooth Rotation
+	SmoothRotator = FMath::RInterpTo(SmoothRotator, Direction.Rotation(), DeltaTime, SmoothTargetViewRotationSpeed);
+	SetControlRotation(SmoothRotator);
+}
+
+void APlayerCharacterController::SetTargetPosition(FVector InTargetPosition)
+{
+	TargetPosition = new FVector(InTargetPosition);
 
 	SmoothRotator = GetCharacter()->GetActorRotation();
+}
+
+FVector* APlayerCharacterController::GetTargetPosition() const
+{
+	return TargetPosition;
+}
+
+float APlayerCharacterController::GetDistTolerance() const
+{
+	return DistTolerance;
+}
+
+void APlayerCharacterController::ResetTargetPosition()
+{
+	TargetPosition = nullptr;
 }

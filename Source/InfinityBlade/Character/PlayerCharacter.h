@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "State/StateType.h"
 #include "PlayerCharacter.generated.h"
+
+class FState;
 
 UCLASS()
 class INFINITYBLADE_API APlayerCharacter : public ACharacter
@@ -20,9 +23,6 @@ private:
 	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* AttackRangeBox;
 
-	//UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
-	//class UDecalComponent* RangeDecal;
-
 	UPROPERTY(EditAnywhere, Category = Materials, meta = (AllowPrivateAccess = "true"))
 	class UMaterialInterface* RangeDecalMaterial;
 
@@ -33,6 +33,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:	
 	// Called every frame
@@ -45,5 +46,19 @@ public:
 	void SetAttackRange();
 	void ResetAttackRange();
 
-	int GetAttackPoint();
+	int GetAttackPoint() const;
+
+	//State
+protected:
+	TMap<EStateType, FState*> StateMap;
+	FState* CurState;
+	EStateType CurStateType;
+
+public:
+	void InitState();
+	void ChangeState(EStateType StateType);
+	FString GetEStateAsString(EStateType EnumValue);
+
+	UFUNCTION(BlueprintCallable)
+	EStateType GetCurStateType() const;
 };

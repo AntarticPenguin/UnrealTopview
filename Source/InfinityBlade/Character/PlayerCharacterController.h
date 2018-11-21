@@ -20,8 +20,7 @@ public:
 private:
 	bool bIsMousePressed;
 
-	FVector TargetLocation;
-	bool bHasTargetLocation;
+	FVector* TargetPosition;
 	float DistTolerance;
 
 	FRotator SmoothRotator;
@@ -30,7 +29,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void PlayerTick(float DeltaTime) override;
-	void MoveAndRotation(float DeltaTime);
 
 	virtual void SetupInputComponent() override;
 
@@ -39,5 +37,12 @@ protected:
 	void OnRightMousePressed();
 	void OnRightMouseReleased();
 
-	void SetTargetLocation(FVector InTargetLocation);
+public:
+	void MoveAndRotation(float DeltaTime);
+
+	void SetTargetPosition(FVector InTargetPosition);
+	FVector* GetTargetPosition() const;
+	float GetDistTolerance() const;
+
+	void ResetTargetPosition();
 };

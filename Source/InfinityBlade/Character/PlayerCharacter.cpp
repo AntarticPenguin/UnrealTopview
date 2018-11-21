@@ -10,6 +10,10 @@
 #include "Enemy/Enemy.h"
 #include "Kismet/GameplayStatics.h"
 
+#include "State/State.h"
+#include "State/IdleState.h"
+#include "State/MoveState.h"
+
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -53,8 +57,16 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	InitState();
+	ChangeState(EStateType::IDLE);
 
 	AttackPoint = 10;
+}
+
+void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+
 }
 
 // Called every frame
@@ -70,11 +82,12 @@ void APlayerCharacter::Tick(float DeltaTime)
 			Controller->GetHitResultUnderCursor(ECC_Visibility, true, Hit);
 			FVector CursorVector = Hit.ImpactNormal;
 			FRotator CursorRotator = CursorVector.Rotation();
-			UE_LOG(LogClass, Warning, TEXT("Rotation: %f %f %f"), CursorRotator.Roll, CursorRotator.Pitch, CursorRotator.Yaw);
 			CursorToWorld->SetWorldLocation(Hit.Location);
 			CursorToWorld->SetWorldRotation(CursorRotator);
 		}
 	}
+
+	CurState->Update(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -118,7 +131,51 @@ void APlayerCharacter::ResetAttackRange()
 	AttackRangeBox->SetRelativeLocation(FVector::ZeroVector);
 }
 
-int APlayerCharacter::GetAttackPoint()
+int APlayerCharacter::GetAttackPoint() const
 {
 	return AttackPoint;
+}
+
+void APlayerCharacter::InitState()
+{
+	FState* IdleState = new FIdleState();
+	FState* MoveState = new FMoveState();
+
+	IdleState->Init(this);
+	MoveState->Init(this);
+
+	StateMap.Add(EStateType::IDLE, IdleState);
+	StateMap.Add(EStateType::MOVE, MoveState);
+}
+
+void APlayerCharacter::ChangeState(EStateType StateType)
+{
+	if (CurStateType == StateType)
+		return;
+
+	if (NULL != CurState)
+	{
+		UE_LOG(LogClass, Warning, TEXT("State::%s stop"), *GetEStateAsString(CurStateType));
+		CurState->Stop();
+	}
+
+	CurState = StateMap[StateType];
+	CurStateType = StateType;
+
+	CurState->Start();
+}
+
+FString APlayerCharacter::GetEStateAsString(EStateType EnumValue)
+{
+	const UEnum* enumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EStateType"), true);
+	if (!enumPtr)
+	{
+		return FString("Invalid");
+	}
+	return enumPtr->GetEnumName((int32)EnumValue);
+}
+
+EStateType APlayerCharacter::GetCurStateType() const
+{
+	return CurStateType;
 }
