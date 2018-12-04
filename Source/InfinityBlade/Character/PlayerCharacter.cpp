@@ -13,6 +13,7 @@
 #include "State/State.h"
 #include "State/IdleState.h"
 #include "State/MoveState.h"
+#include "State/AttackState.h"
 
 
 // Sets default values
@@ -62,11 +63,6 @@ void APlayerCharacter::BeginPlay()
 	ChangeState(EStateType::IDLE);
 
 	AttackPoint = 10;
-}
-
-void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-
 }
 
 // Called every frame
@@ -136,16 +132,24 @@ int APlayerCharacter::GetAttackPoint() const
 	return AttackPoint;
 }
 
+void APlayerCharacter::FinishAttack()
+{
+	ChangeState(EStateType::IDLE);
+}
+
 void APlayerCharacter::InitState()
 {
 	FState* IdleState = new FIdleState();
 	FState* MoveState = new FMoveState();
+	FState* AttackState = new FAttackState();
 
 	IdleState->Init(this);
 	MoveState->Init(this);
+	AttackState->Init(this);
 
 	StateMap.Add(EStateType::IDLE, IdleState);
 	StateMap.Add(EStateType::MOVE, MoveState);
+	StateMap.Add(EStateType::ATTACK, AttackState);
 }
 
 void APlayerCharacter::ChangeState(EStateType StateType)
@@ -172,10 +176,22 @@ FString APlayerCharacter::GetEStateAsString(EStateType EnumValue)
 	{
 		return FString("Invalid");
 	}
-	return enumPtr->GetEnumName((int32)EnumValue);
+	return enumPtr->GetNameStringByIndex((int32)EnumValue);
 }
 
 EStateType APlayerCharacter::GetCurStateType() const
 {
 	return CurStateType;
+}
+
+FVector* APlayerCharacter::GetTargetPosition()
+{
+	return Cast<APlayerCharacterController>(GetController())->GetTargetPosition();
+}
+
+bool APlayerCharacter::HasTargetPosition()
+{
+	if (nullptr != GetTargetPosition())
+		return true;
+	return false;
 }

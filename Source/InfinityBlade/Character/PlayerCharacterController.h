@@ -6,9 +6,6 @@
 #include "GameFramework/PlayerController.h"
 #include "PlayerCharacterController.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class INFINITYBLADE_API APlayerCharacterController : public APlayerController
 {
@@ -18,6 +15,7 @@ public:
 	APlayerCharacterController();
 
 private:
+	class APlayerCharacter* Character;
 	bool bIsMousePressed;
 
 	FVector* TargetPosition;
@@ -45,4 +43,8 @@ public:
 	float GetDistTolerance() const;
 
 	void ResetTargetPosition();
+
+	//Function related character' state
+public:
+	void WaitSetTargetPosition();
 };

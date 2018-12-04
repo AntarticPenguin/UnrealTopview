@@ -33,7 +33,6 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:	
 	// Called every frame
@@ -42,11 +41,15 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	//About attack
+public:
 	TArray<AActor*> CheckAttackRange();
 	void SetAttackRange();
 	void ResetAttackRange();
-
 	int GetAttackPoint() const;
+
+	UFUNCTION(BlueprintCallable)
+	void FinishAttack();
 
 	//State
 protected:
@@ -59,6 +62,9 @@ public:
 	void ChangeState(EStateType StateType);
 	FString GetEStateAsString(EStateType EnumValue);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe))
 	EStateType GetCurStateType() const;
+
+	FVector* GetTargetPosition();
+	bool HasTargetPosition();
 };

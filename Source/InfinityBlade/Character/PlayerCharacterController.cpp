@@ -16,6 +16,12 @@ void APlayerCharacterController::BeginPlay()
 	bIsMousePressed = false;
 	TargetPosition = nullptr;
 	DistTolerance = 110;
+	
+	Character = Cast<APlayerCharacter>(GetCharacter());
+	if (!Character)
+	{
+		UE_LOG(LogClass, Warning, TEXT("PlayerCharacterController: Failed Get Character!!"));
+	}
 }
 
 void APlayerCharacterController::PlayerTick(float DeltaTime)
@@ -24,16 +30,18 @@ void APlayerCharacterController::PlayerTick(float DeltaTime)
 
 	if (bIsMousePressed)
 	{
-		FHitResult Hit;
-		GetHitResultUnderCursor(ECC_Visibility, false, Hit);
-
-		if (Hit.bBlockingHit)
+		switch (Character->GetCurStateType())
 		{
-			if (GetCharacter())
-			{
-				SetTargetPosition(Hit.ImpactPoint);
-				Cast<APlayerCharacter>(GetCharacter())->ChangeState(EStateType::MOVE);
-			}
+		case EStateType::IDLE:
+			WaitSetTargetPosition();
+			break;
+		case EStateType::MOVE:
+			WaitSetTargetPosition();
+			break;
+		case EStateType::ATTACK:
+			break;
+		default:
+			break;
 		}
 	}
 }
@@ -61,18 +69,9 @@ void APlayerCharacterController::OnLeftMouseReleased()
 
 void APlayerCharacterController::OnRightMousePressed()
 {
-	UE_LOG(LogClass, Warning, TEXT("Attack Button Clicked!!"));
-
-	auto Character = Cast<APlayerCharacter>(GetCharacter());
-	if (Character)
+	if (EStateType::ATTACK != Character->GetCurStateType())
 	{
-		//TODO: 적에게 데미지 주는 방식(현재는 컨트롤러에서)
-		TArray<AActor*> Enemies = Character->CheckAttackRange();
-		for (auto Enemy : Enemies)
-		{
-			UE_LOG(LogClass, Warning, TEXT("Name: %s"), *(Enemy->GetName()));
-			Cast<AEnemy>(Enemy)->DecreaseHp(Character->GetAttackPoint());
-		}
+		Character->ChangeState(EStateType::ATTACK);
 	}
 }
 
@@ -116,4 +115,15 @@ float APlayerCharacterController::GetDistTolerance() const
 void APlayerCharacterController::ResetTargetPosition()
 {
 	TargetPosition = nullptr;
+}
+
+void APlayerCharacterController::WaitSetTargetPosition()
+{
+	FHitResult Hit;
+	GetHitResultUnderCursor(ECC_Visibility, false, Hit);
+
+	if (Hit.bBlockingHit)
+	{
+		SetTargetPosition(Hit.ImpactPoint);
+	}
 }

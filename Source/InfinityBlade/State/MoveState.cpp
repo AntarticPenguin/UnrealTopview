@@ -22,16 +22,16 @@ void FMoveState::Update(float DeltaTime)
 {
 	FState::Update(DeltaTime);
 
-	auto Controller = Cast<APlayerCharacterController>(Character->GetController());
-
-	if (nullptr != Controller->GetTargetPosition())
+	if (Character->HasTargetPosition())
 	{
-		if (FVector::Dist(Character->GetActorLocation(), *Controller->GetTargetPosition())
-			< Controller->GetDistTolerance())
+		Destination = Character->GetTargetPosition();
+
+		auto Controller = Cast<APlayerCharacterController>(Character->GetController());
+
+		if (FVector::Dist(Character->GetActorLocation(), *Destination) < Controller->GetDistTolerance())
 		{
-			UE_LOG(LogClass, Warning, TEXT("Arrived"));
 			Controller->ResetTargetPosition();
-			Character->ChangeState(EStateType::IDLE);
+			NextState = EStateType::IDLE;
 			return;
 		}
 
@@ -50,4 +50,6 @@ void FMoveState::Stop()
 {
 	FState::Stop();
 
+	auto Controller = Cast<APlayerCharacterController>(Character->GetController());
+	Controller->ResetTargetPosition();
 }

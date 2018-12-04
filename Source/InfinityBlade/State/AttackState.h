@@ -8,14 +8,11 @@
 /**
  * 
  */
-class INFINITYBLADE_API FMoveState : public FState
+class INFINITYBLADE_API FAttackState : public FState
 {
 public:
-	FMoveState();
-	~FMoveState();
-
-private:
-	FVector* Destination;
+	FAttackState();
+	~FAttackState();
 
 public:
 	virtual void Init(APlayerCharacter* InCharacter) override;
