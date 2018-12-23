@@ -1,0 +1,3 @@
+- Character Animation : Idle, Run, Attack
+- Minimap at Top-Right side of Screen
+- Draw character position on Minimap
