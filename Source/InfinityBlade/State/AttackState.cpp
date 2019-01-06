@@ -35,7 +35,7 @@ void FAttackState::Start()
 		TArray<AActor*> Enemies = Character->CheckAttackRange();
 		for (auto Enemy : Enemies)
 		{
-			UE_LOG(LogClass, Warning, TEXT("Attack to %s"), *(Enemy->GetName()));
+			UE_LOG(LogClass, Warning, TEXT("Attack to %s, Dmg: %d"), *(Enemy->GetName()), Character->GetAttackPoint());
 			Cast<AEnemy>(Enemy)->DecreaseHp(Character->GetAttackPoint());
 		}
 	}

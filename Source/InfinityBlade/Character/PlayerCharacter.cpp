@@ -14,6 +14,7 @@
 #include "State/IdleState.h"
 #include "State/MoveState.h"
 #include "State/AttackState.h"
+#include "State/DeadState.h"
 
 
 // Sets default values
@@ -142,14 +143,17 @@ void APlayerCharacter::InitState()
 	FState* IdleState = new FIdleState();
 	FState* MoveState = new FMoveState();
 	FState* AttackState = new FAttackState();
+	FState* DeadState = new FDeadState();
 
 	IdleState->Init(this);
 	MoveState->Init(this);
 	AttackState->Init(this);
+	DeadState->Init(this);
 
 	StateMap.Add(EStateType::IDLE, IdleState);
 	StateMap.Add(EStateType::MOVE, MoveState);
 	StateMap.Add(EStateType::ATTACK, AttackState);
+	StateMap.Add(EStateType::DEAD, DeadState);
 }
 
 void APlayerCharacter::ChangeState(EStateType StateType)
