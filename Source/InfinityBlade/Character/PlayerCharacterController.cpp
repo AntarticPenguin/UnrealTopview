@@ -59,11 +59,6 @@ void APlayerCharacterController::SetupInputComponent()
 	InputComponent->BindAction("RightMouse", IE_Pressed, this, &APlayerCharacterController::OnRightMousePressed);
 	InputComponent->BindAction("RightMouse", IE_Released, this, &APlayerCharacterController::OnRightMouseReleased);
 
-	//Skill
-	InputComponent->BindAction("SkillBtn_A", IE_Pressed, this, &APlayerCharacterController::OnSkillBtn_A);
-
-	//Test
-	InputComponent->BindAction("TestDeath", IE_Pressed, this, &APlayerCharacterController::TestDeath);
 }
 
 void APlayerCharacterController::OnLeftMousePressed()
@@ -92,11 +87,6 @@ void APlayerCharacterController::OnRightMouseReleased()
 void APlayerCharacterController::OnSkillBtn_A()
 {
 	UE_LOG(LogClass, Warning, TEXT("Pressed SkillBtn_A"));
-
-	//GetWorld()->SpawnActor<ASkill>(Character->GetActorLocation(), Character->GetActorRotation());
-	ASkill* Fireball = NewObject<ASkill>();
-	auto fireballActor = GetWorld()->SpawnActor(Fireball->GetBPAsset()->GeneratedClass);
-	fireballActor->SetActorLocation(Character->GetActorLocation());
 }
 
 void APlayerCharacterController::TestDeath()

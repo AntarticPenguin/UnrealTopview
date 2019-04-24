@@ -35,12 +35,6 @@ protected:
 	void OnRightMousePressed();
 	void OnRightMouseReleased();
 
-	//skill
-	void OnSkillBtn_A();
-
-	//test
-	void TestDeath();
-
 public:
 	void MoveAndRotation(float DeltaTime);
 

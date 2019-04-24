@@ -9,5 +9,4 @@ enum class EStateType : uint8
 	IDLE,
 	MOVE,
 	ATTACK,
-	DEAD,
 };
