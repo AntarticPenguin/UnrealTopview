@@ -84,16 +84,6 @@ void APlayerCharacterController::OnRightMouseReleased()
 
 }
 
-void APlayerCharacterController::OnSkillBtn_A()
-{
-	UE_LOG(LogClass, Warning, TEXT("Pressed SkillBtn_A"));
-}
-
-void APlayerCharacterController::TestDeath()
-{
-	Character->ChangeState(EStateType::DEAD);
-}
-
 void APlayerCharacterController::MoveAndRotation(float DeltaTime)
 {
 	//ACharacter* Character = GetCharacter();
