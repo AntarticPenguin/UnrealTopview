@@ -163,7 +163,6 @@ void APlayerCharacter::ChangeState(EStateType StateType)
 
 	if (NULL != CurState)
 	{
-		UE_LOG(LogClass, Warning, TEXT("State::%s stop"), *GetEStateAsString(CurStateType));
 		CurState->Stop();
 	}
 
@@ -171,16 +170,6 @@ void APlayerCharacter::ChangeState(EStateType StateType)
 	CurStateType = StateType;
 
 	CurState->Start();
-}
-
-FString APlayerCharacter::GetEStateAsString(EStateType EnumValue)
-{
-	const UEnum* enumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EStateType"), true);
-	if (!enumPtr)
-	{
-		return FString("Invalid");
-	}
-	return enumPtr->GetNameStringByIndex((int32)EnumValue);
 }
 
 EStateType APlayerCharacter::GetCurStateType() const

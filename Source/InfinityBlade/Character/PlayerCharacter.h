@@ -60,7 +60,7 @@ protected:
 public:
 	void InitState();
 	void ChangeState(EStateType StateType);
-	FString GetEStateAsString(EStateType EnumValue);
+	/*FString GetEStateAsString(EStateType EnumValue);*/
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintThreadSafe))
 	EStateType GetCurStateType() const;

@@ -2,6 +2,7 @@
 
 #include "State.h"
 #include "Character/PlayerCharacter.h"
+#include "UObject/UObjectGlobals.h"
 
 FState::FState()
 {
@@ -33,5 +34,15 @@ void FState::Start()
 
 void FState::Stop()
 {
+	
+}
 
+FString FState::GetEStateAsString(EStateType EnumValue)
+{
+	const UEnum* enumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EStateType"), true);
+	if (!enumPtr)
+	{
+		return FString("Invalid");
+	}
+	return enumPtr->GetNameStringByIndex((int32)EnumValue);
 }

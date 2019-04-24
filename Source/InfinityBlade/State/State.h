@@ -24,4 +24,6 @@ public:
 	virtual void Update(float DeltaTime);
 	virtual void Start();
 	virtual void Stop();
+
+	FString GetEStateAsString(EStateType EnumValue);
 };

@@ -44,6 +44,7 @@ void FMoveState::Start()
 	FState::Start();
 
 	CurState = EStateType::MOVE;
+	UE_LOG(LogClass, Warning, TEXT("State::%s Start"), *GetEStateAsString(CurState));
 }
 
 void FMoveState::Stop()

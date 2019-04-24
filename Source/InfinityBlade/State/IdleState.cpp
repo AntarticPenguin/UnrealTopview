@@ -33,6 +33,7 @@ void FIdleState::Start()
 	FState::Start();
 
 	CurState = EStateType::IDLE;
+	UE_LOG(LogClass, Warning, TEXT("State::%s Start"), *GetEStateAsString(CurState));
 }
 
 void FIdleState::Stop()

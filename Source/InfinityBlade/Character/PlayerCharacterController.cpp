@@ -5,6 +5,10 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "PlayerCharacter.h"
 #include "Enemy/Enemy.h"
+#include "Engine.h"
+
+#include "Skill/Skill.h"
+
 
 APlayerCharacterController::APlayerCharacterController()
 {
@@ -88,6 +92,11 @@ void APlayerCharacterController::OnRightMouseReleased()
 void APlayerCharacterController::OnSkillBtn_A()
 {
 	UE_LOG(LogClass, Warning, TEXT("Pressed SkillBtn_A"));
+
+	//GetWorld()->SpawnActor<ASkill>(Character->GetActorLocation(), Character->GetActorRotation());
+	ASkill* Fireball = NewObject<ASkill>();
+	auto fireballActor = GetWorld()->SpawnActor(Fireball->GetBPAsset()->GeneratedClass);
+	fireballActor->SetActorLocation(Character->GetActorLocation());
 }
 
 void APlayerCharacterController::TestDeath()
@@ -97,7 +106,7 @@ void APlayerCharacterController::TestDeath()
 
 void APlayerCharacterController::MoveAndRotation(float DeltaTime)
 {
-	ACharacter* Character = GetCharacter();
+	//ACharacter* Character = GetCharacter();
 
 	//Smooth Move
 	UCharacterMovementComponent* MovementComponent = Character->GetCharacterMovement();

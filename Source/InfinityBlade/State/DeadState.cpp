@@ -25,6 +25,7 @@ void FDeadState::Start()
 	FState::Start();
 
 	CurState = EStateType::DEAD;
+	UE_LOG(LogClass, Warning, TEXT("State::%s Start"), *GetEStateAsString(CurState));
 }
 
 void FDeadState::Stop()

@@ -29,6 +29,7 @@ void FAttackState::Start()
 {
 	FState::Start();
 	CurState = EStateType::ATTACK;
+	UE_LOG(LogClass, Warning, TEXT("State::%s Start"), *GetEStateAsString(CurState));
 	
 	if (Character)
 	{
